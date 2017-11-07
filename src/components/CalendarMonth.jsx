@@ -40,6 +40,7 @@ const propTypes = forbidExtraProps({
   renderMonth: PropTypes.func,
   renderDay: PropTypes.func,
   firstDayOfWeek: DayOfWeekShape,
+  isYearsEnabled: PropTypes.bool,
 
   focusedDate: momentPropTypes.momentObj, // indicates focusable day
   isFocused: PropTypes.bool, // indicates whether or not to move focus to focusable day
@@ -62,6 +63,7 @@ const defaultProps = {
   renderMonth: null,
   renderDay: null,
   firstDayOfWeek: null,
+  isYearsEnabled: false,
 
   focusedDate: null,
   isFocused: false,
@@ -72,6 +74,31 @@ const defaultProps = {
 };
 
 export default class CalendarMonth extends React.Component {
+  static renderMonthTitle(isYearsEnabled, monthTitle) {
+    if (isYearsEnabled) {
+      const monthParts = monthTitle.split(' ');
+
+      return (
+        <div
+          id="CalendarMonth__caption"
+          className="CalendarMonth__caption js-CalendarMonth__caption"
+        >
+          <strong className="CalendarMonth__caption__month">{monthParts[0]}</strong>
+          <strong className="CalendarMonth__caption__year">{monthParts[1]}</strong>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        id="CalendarMonth__caption"
+        className="CalendarMonth__caption js-CalendarMonth__caption"
+      >
+        <strong>{monthTitle}</strong>
+      </div>
+    );
+  }
+
   constructor(props) {
     super(props);
 
@@ -119,6 +146,7 @@ export default class CalendarMonth extends React.Component {
       focusedDate,
       isFocused,
       phrases,
+      isYearsEnabled,
     } = this.props;
 
     const { weeks } = this.state;
@@ -132,12 +160,7 @@ export default class CalendarMonth extends React.Component {
 
     return (
       <div className={calendarMonthClasses} data-visible={isVisible}>
-        <div
-          id="CalendarMonth__caption"
-          className="CalendarMonth__caption js-CalendarMonth__caption"
-        >
-          <strong>{monthTitle}</strong>
-        </div>
+        {CalendarMonth.renderMonthTitle(isYearsEnabled, monthTitle)}
         <table role="presentation">
 
           <tbody className="js-CalendarMonth__grid">

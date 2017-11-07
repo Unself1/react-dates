@@ -25,10 +25,14 @@ const propTypes = forbidExtraProps({
   onPrevMonthClick: PropTypes.func,
   onNextMonthClick: PropTypes.func,
 
+  onPrevYearClick: PropTypes.func,
+  onNextYearClick: PropTypes.func,
+
   // internationalization
   phrases: PropTypes.shape(getPhrasePropTypes(DayPickerNavigationPhrases)),
 
   isRTL: PropTypes.bool,
+  isYearsEnabled: PropTypes.bool,
 });
 
 const defaultProps = {
@@ -39,9 +43,13 @@ const defaultProps = {
   onPrevMonthClick() {},
   onNextMonthClick() {},
 
+  onPrevYearClick() {},
+  onNextYearClick() {},
+
   // internationalization
   phrases: DayPickerNavigationPhrases,
   isRTL: false,
+  isYearsEnabled: false,
 };
 
 export default function DayPickerNavigation(props) {
@@ -50,9 +58,12 @@ export default function DayPickerNavigation(props) {
     navNext,
     onPrevMonthClick,
     onNextMonthClick,
+    onPrevYearClick,
+    onNextYearClick,
     orientation,
     phrases,
     isRTL,
+    isYearsEnabled,
   } = props;
 
   const isVertical = orientation !== HORIZONTAL_ORIENTATION;
@@ -82,42 +93,78 @@ export default function DayPickerNavigation(props) {
     'DayPickerNavigation--vertical': isVertical,
     'DayPickerNavigation--vertical-scrollable': isVerticalScrollable,
   });
-  const prevClassNames = cx('DayPickerNavigation__prev', {
-    'DayPickerNavigation__prev--default': isDefaultNavPrev,
-    'DayPickerNavigation__prev--rtl': isRTL,
+  const prevMonthClassNames = cx('DayPickerNavigationMonth__prev', {
+    'DayPickerNavigationMonth__prev--default': isDefaultNavPrev,
+    'DayPickerNavigationMonth__prev--rtl': isRTL,
   });
-  const nextClassNames = cx('DayPickerNavigation__next', {
-    'DayPickerNavigation__next--default': isDefaultNavNext,
-    'DayPickerNavigation__next--rtl': isRTL,
+  const nextMonthClassNames = cx('DayPickerNavigationMonth__next', {
+    'DayPickerNavigationMonth__next--default': isDefaultNavNext,
+    'DayPickerNavigationMonth__next--rtl': isRTL,
+  });
+  const prevYearClassNames = cx('DayPickerNavigationYear__prev', {
+    'DayPickerNavigationYear__prev--default': isDefaultNavPrev,
+    'DayPickerNavigationYear__prev--rtl': isRTL,
+  });
+  const nextYearClassNames = cx('DayPickerNavigationYear__next', {
+    'DayPickerNavigationYear__next--default': isDefaultNavNext,
+    'DayPickerNavigationYear__next--rtl': isRTL,
   });
 
   return (
     <div className={navClassNames}>
-      {!isVerticalScrollable && (
+      <div className="DayPickerNavigationMonth">
+        {!isVerticalScrollable && (
+          <button
+            type="button"
+            aria-label={phrases.jumpToPrevMonth}
+            className={prevMonthClassNames}
+            onClick={onPrevMonthClick}
+            onMouseUp={(e) => {
+              e.currentTarget.blur();
+            }}
+          >
+            {navPrevIcon}
+          </button>
+        )}
+
         <button
           type="button"
-          aria-label={phrases.jumpToPrevMonth}
-          className={prevClassNames}
-          onClick={onPrevMonthClick}
+          aria-label={phrases.jumpToNextMonth}
+          className={nextMonthClassNames}
+          onClick={onNextMonthClick}
           onMouseUp={(e) => {
             e.currentTarget.blur();
           }}
         >
-          {navPrevIcon}
+          {navNextIcon}
         </button>
+      </div>
+      {isYearsEnabled && (
+        <div className="DayPickerNavigationYear">
+          <button
+            type="button"
+            aria-label={phrases.jumpToPrevMonth}
+            className={prevYearClassNames}
+            onClick={onPrevYearClick}
+            onMouseUp={(e) => {
+              e.currentTarget.blur();
+            }}
+          >
+            {navPrevIcon}
+          </button>
+          <button
+            type="button"
+            aria-label={phrases.jumpToNextMonth}
+            className={nextYearClassNames}
+            onClick={onNextYearClick}
+            onMouseUp={(e) => {
+              e.currentTarget.blur();
+            }}
+          >
+            {navNextIcon}
+          </button>
+        </div>
       )}
-
-      <button
-        type="button"
-        aria-label={phrases.jumpToNextMonth}
-        className={nextClassNames}
-        onClick={onNextMonthClick}
-        onMouseUp={(e) => {
-          e.currentTarget.blur();
-        }}
-      >
-        {navNextIcon}
-      </button>
     </div>
   );
 }

@@ -236,4 +236,18 @@ storiesOf('DayPickerSingleDateController', module)
         <TestCustomInfoPanel />
       )}
     />
+  ))
+  .addWithInfo('with year navigation with a single month', () => (
+    <DayPickerSingleDateControllerWrapper
+      onOutsideClick={action('DayPickerSingleDateController::onOutsideClick')}
+      onPrevMonthClick={action('DayPickerSingleDateController::onPrevMonthClick')}
+      onNextMonthClick={action('DayPickerSingleDateController::onNextMonthClick')}
+      onPrevYearClick={action('DayPickerSingleDateController::onPrevYearClick')}
+      onNextYearClick={action('DayPickerSingleDateController::onNextYearClick')}
+      numberOfMonths={1}
+      isYearsEnabled
+      renderCalendarInfo={() => (
+        <TestCustomInfoPanel />
+      )}
+    />
   ));

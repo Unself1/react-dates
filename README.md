@@ -1,5 +1,7 @@
 # react-dates <sup>[![Version Badge][npm-version-svg]][package-url]</sup>
 
+# NOTE: This fork is not meant for broad consumption. This is our attempt to get year toggles while react-dates decides on the best implementation!
+
 [![Build Status][travis-svg]][travis-url]
 [![dependency status][deps-svg]][deps-url]
 [![dev dependency status][dev-deps-svg]][dev-deps-url]

@@ -47,6 +47,7 @@ const propTypes = forbidExtraProps({
   focusedDate: momentPropTypes.momentObj, // indicates focusable day
   isFocused: PropTypes.bool, // indicates whether or not to move focus to focusable day
   firstDayOfWeek: DayOfWeekShape,
+  isYearsEnabled: PropTypes.bool,
 
   // i18n
   monthFormat: PropTypes.string,
@@ -72,6 +73,7 @@ const defaultProps = {
   focusedDate: null,
   isFocused: false,
   firstDayOfWeek: null,
+  isYearsEnabled: false,
 
   // i18n
   monthFormat: 'MMMM YYYY', // english locale
@@ -117,10 +119,17 @@ export default class CalendarMonthGrid extends React.Component {
     const { months } = this.state;
 
     const hasMonthChanged = !this.props.initialMonth.isSame(initialMonth, 'month');
+    const hasYearChanged = this.props.initialMonth.clone().add(1, 'year').isSame(initialMonth) || this.props.initialMonth.clone().subtract(1, 'year').isSame(initialMonth);
     const hasNumberOfMonthsChanged = this.props.numberOfMonths !== numberOfMonths;
     let newMonths = months;
 
-    if (hasMonthChanged && !hasNumberOfMonthsChanged) {
+    if (hasYearChanged) {
+      if (this.props.initialMonth.clone().add(1, 'year').isSame(initialMonth)) {
+        newMonths = months.map(month => month.add(1, 'year'));
+      } else {
+        newMonths = months.map(month => month.subtract(1, 'year'));
+      }
+    } else if (hasMonthChanged && !hasNumberOfMonthsChanged) {
       if (isAfterDay(initialMonth, this.props.initialMonth)) {
         newMonths = months.slice(1);
         newMonths.push(months[months.length - 1].clone().add(1, 'month'));
@@ -187,6 +196,7 @@ export default class CalendarMonthGrid extends React.Component {
       focusedDate,
       isFocused,
       phrases,
+      isYearsEnabled,
     } = this.props;
 
     const { months } = this.state;
@@ -220,8 +230,10 @@ export default class CalendarMonthGrid extends React.Component {
         onTransitionEnd={onMonthTransitionEnd}
       >
         {months.map((month, i) => {
+
           const isVisible =
             (i >= firstVisibleMonthIndex) && (i < firstVisibleMonthIndex + numberOfMonths);
+
           const monthString = toISOMonthString(month);
           return (
             <CalendarMonth
@@ -242,6 +254,7 @@ export default class CalendarMonthGrid extends React.Component {
               focusedDate={isVisible ? focusedDate : null}
               isFocused={isFocused}
               phrases={phrases}
+              isYearsEnabled={isYearsEnabled}
             />
           );
         })}

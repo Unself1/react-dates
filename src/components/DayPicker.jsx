@@ -54,12 +54,15 @@ const propTypes = forbidExtraProps({
   hideKeyboardShortcutsPanel: PropTypes.bool,
   daySize: nonNegativeInteger,
   isRTL: PropTypes.bool,
+  isYearsEnabled: PropTypes.bool,
 
   // navigation props
   navPrev: PropTypes.node,
   navNext: PropTypes.node,
   onPrevMonthClick: PropTypes.func,
   onNextMonthClick: PropTypes.func,
+  onPrevYearClick: PropTypes.func,
+  onNextYearClick: PropTypes.func,
   onMultiplyScrollableMonths: PropTypes.func, // VERTICAL_SCROLLABLE daypickers only
 
   // month props
@@ -98,12 +101,15 @@ export const defaultProps = {
   hideKeyboardShortcutsPanel: false,
   daySize: DAY_SIZE,
   isRTL: false,
+  isYearsEnabled: false,
 
   // navigation props
   navPrev: null,
   navNext: null,
   onPrevMonthClick() {},
   onNextMonthClick() {},
+  onPrevYearClick() {},
+  onNextYearClick() {},
   onMultiplyScrollableMonths() {},
 
   // month props
@@ -214,6 +220,8 @@ export default class DayPicker extends React.Component {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.onPrevMonthClick = this.onPrevMonthClick.bind(this);
     this.onNextMonthClick = this.onNextMonthClick.bind(this);
+    this.onPrevYearClick = this.onPrevYearClick.bind(this);
+    this.onNextYearClick = this.onNextYearClick.bind(this);
     this.setCalendarMonthGridRef = this.setCalendarMonthGridRef.bind(this);
     this.multiplyScrollableMonths = this.multiplyScrollableMonths.bind(this);
     this.updateStateAfterMonthTransition = this.updateStateAfterMonthTransition.bind(this);
@@ -442,6 +450,44 @@ export default class DayPicker extends React.Component {
     });
   }
 
+  onPrevYearClick(e) {
+    const { onPrevYearClick } = this.props;
+    const { currentMonth } = this.state;
+
+    if (e) e.preventDefault();
+
+    const translationValue = 0;
+    const newCurrentMonth = currentMonth.clone().subtract(1, 'year');
+
+    if (onPrevYearClick) onPrevYearClick(newCurrentMonth);
+
+    this.setState({
+      translationValue,
+      focusedDate: null,
+      currentMonth: newCurrentMonth,
+      nextFocusedDate: null,
+    });
+  }
+
+  onNextYearClick(e) {
+    const { onNextYearClick } = this.props;
+    const { currentMonth } = this.state;
+
+    if (e) e.preventDefault();
+
+    const translationValue = 0;
+    const newCurrentMonth = currentMonth.clone().add(1, 'year');
+
+    if (onNextYearClick) onNextYearClick(newCurrentMonth);
+
+    this.setState({
+      translationValue,
+      focusedDate: null,
+      currentMonth: newCurrentMonth,
+      nextFocusedDate: null,
+    });
+  }
+
   getFocusedDay(newMonth) {
     const { getFirstFocusableDay, numberOfMonths } = this.props;
 
@@ -663,6 +709,7 @@ export default class DayPicker extends React.Component {
       orientation,
       phrases,
       isRTL,
+      isYearsEnabled,
     } = this.props;
 
     let onNextMonthClick;
@@ -676,11 +723,14 @@ export default class DayPicker extends React.Component {
       <DayPickerNavigation
         onPrevMonthClick={(e) => { this.onPrevMonthClick(null, e); }}
         onNextMonthClick={onNextMonthClick}
+        onPrevYearClick={this.onPrevYearClick}
+        onNextYearClick={this.onNextYearClick}
         navPrev={navPrev}
         navNext={navNext}
         orientation={orientation}
         phrases={phrases}
         isRTL={isRTL}
+        isYearsEnabled={isYearsEnabled}
       />
     );
   }
@@ -761,6 +811,7 @@ export default class DayPicker extends React.Component {
       daySize,
       isFocused,
       phrases,
+      isYearsEnabled,
     } = this.props;
 
     const numOfWeekHeaders = this.isVertical() ? 1 : numberOfMonths;
@@ -875,6 +926,7 @@ export default class DayPicker extends React.Component {
                 isFocused={shouldFocusDate}
                 focusedDate={focusedDate}
                 phrases={phrases}
+                isYearsEnabled={isYearsEnabled}
               />
               {verticalScrollable && this.renderNavigation()}
             </div>

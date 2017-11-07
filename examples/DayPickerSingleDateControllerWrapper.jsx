@@ -37,6 +37,10 @@ const propTypes = forbidExtraProps({
 
   onPrevMonthClick: PropTypes.func,
   onNextMonthClick: PropTypes.func,
+
+  onPrevYearClick: PropTypes.func,
+  onNextYearClick: PropTypes.func,
+
   onOutsideClick: PropTypes.func,
   renderDay: PropTypes.func,
 
@@ -44,6 +48,7 @@ const propTypes = forbidExtraProps({
   monthFormat: PropTypes.string,
 
   isRTL: PropTypes.bool,
+  isYearsEnabled: PropTypes.bool,
 });
 
 const defaultProps = {
@@ -68,12 +73,15 @@ const defaultProps = {
   keepOpenOnDateSelect: false,
   renderCalendarInfo: null,
   isRTL: false,
+  isYearsEnabled: false,
 
   // navigation related props
   navPrev: null,
   navNext: null,
   onPrevMonthClick() {},
   onNextMonthClick() {},
+  onPrevYearClick() {},
+  onNextYearClick() {},
 
   // internationalization
   monthFormat: 'MMMM YYYY',
