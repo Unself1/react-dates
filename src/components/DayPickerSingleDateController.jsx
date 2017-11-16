@@ -10,6 +10,7 @@ import { DayPickerPhrases } from '../defaultPhrases';
 import getPhrasePropTypes from '../utils/getPhrasePropTypes';
 
 import isSameDay from '../utils/isSameDay';
+import isSameMonth from '../utils/isSameMonth';
 import isAfterDay from '../utils/isAfterDay';
 
 import getVisibleDays from '../utils/getVisibleDays';
@@ -155,6 +156,7 @@ export default class DayPickerSingleDateController extends React.Component {
       hoverDate: null,
       currentMonth,
       visibleDays,
+      shouldResetToToday: false,
     };
 
     this.onDayMouseEnter = this.onDayMouseEnter.bind(this);
@@ -227,7 +229,7 @@ export default class DayPickerSingleDateController extends React.Component {
       });
     }
 
-    const didDateChange = date !== this.props.date;
+    const didDateChange = !moment(date).isSame(moment(this.props.date), 'day');
     const didFocusChange = focused !== this.props.focused;
 
     let modifiers = {};
@@ -235,6 +237,23 @@ export default class DayPickerSingleDateController extends React.Component {
     if (didDateChange) {
       modifiers = this.deleteModifier(modifiers, this.props.date, 'selected');
       modifiers = this.addModifier(modifiers, date, 'selected');
+    }
+
+    // update visible days since a day outside of the visible range was selected
+    if (!isSameDay(date, this.props.date) && !isSameMonth(date, this.state.currentMonth)) {
+      const newMonthState = this.getStateForNewMonth(nextProps);
+      const currentMonth = newMonthState.currentMonth;
+      visibleDays = getVisibleDays(currentMonth, 1, enableOutsideDays);
+      this.setState({
+        currentMonth,
+        shouldResetToToday: true,
+      });
+      modifiers = this.getModifiers(visibleDays);
+      modifiers = this.addModifier(modifiers, date, 'selected', true);
+    } else {
+      this.setState({
+        shouldResetToToday: false,
+      });
     }
 
     if (didFocusChange || recomputePropModifiers) {
@@ -296,8 +315,12 @@ export default class DayPickerSingleDateController extends React.Component {
   }
 
   onDayClick(day, e) {
-    if (e) e.preventDefault();
-    if (this.isBlocked(day)) return;
+    if (e) {
+      e.preventDefault();
+    }
+    if (this.isBlocked(day)) {
+      return;
+    }
     const {
       onDateChange,
       keepOpenOnDateSelect,
@@ -313,7 +336,9 @@ export default class DayPickerSingleDateController extends React.Component {
   }
 
   onDayMouseEnter(day) {
-    if (this.isTouchDevice) return;
+    if (this.isTouchDevice) {
+      return;
+    }
     const { hoverDate, visibleDays } = this.state;
 
     let modifiers = this.deleteModifier({}, hoverDate, 'hovered');
@@ -330,7 +355,9 @@ export default class DayPickerSingleDateController extends React.Component {
 
   onDayMouseLeave() {
     const { hoverDate, visibleDays } = this.state;
-    if (this.isTouchDevice || !hoverDate) return;
+    if (this.isTouchDevice || !hoverDate) {
+      return;
+    }
 
     const modifiers = this.deleteModifier({}, hoverDate, 'hovered');
 
@@ -397,6 +424,7 @@ export default class DayPickerSingleDateController extends React.Component {
     const prevYear = currentMonth.clone().subtract(1, 'year');
     const prevYearVisibleDays = getVisibleDays(prevYear, 1, enableOutsideDays);
 
+
     this.setState({
       currentMonth: prevYear,
       visibleDays: {
@@ -444,7 +472,9 @@ export default class DayPickerSingleDateController extends React.Component {
       }
 
       const viableDays = days.filter(day => !this.isBlocked(day) && isAfterDay(day, focusedDate));
-      if (viableDays.length > 0) focusedDate = viableDays[0];
+      if (viableDays.length > 0) {
+        focusedDate = viableDays[0];
+      }
     }
 
     return focusedDate;
@@ -475,7 +505,7 @@ export default class DayPickerSingleDateController extends React.Component {
     return { currentMonth, visibleDays };
   }
 
-  addModifier(updatedDays, day, modifier) {
+  addModifier(updatedDays, day, modifier, force = false) {
     const { numberOfMonths: numberOfVisibleMonths, enableOutsideDays, orientation } = this.props;
     const { currentMonth: firstVisibleMonth, visibleDays } = this.state;
 
@@ -485,7 +515,7 @@ export default class DayPickerSingleDateController extends React.Component {
       currentMonth = currentMonth.clone().subtract(1, 'month');
       numberOfMonths += 2;
     }
-    if (!day || !isDayVisible(day, currentMonth, numberOfMonths, enableOutsideDays)) {
+    if (!day || (!force && !isDayVisible(day, currentMonth, numberOfMonths, enableOutsideDays))) {
       return updatedDays;
     }
 
@@ -623,7 +653,7 @@ export default class DayPickerSingleDateController extends React.Component {
       weekDayFormat,
     } = this.props;
 
-    const { currentMonth, visibleDays } = this.state;
+    const { currentMonth, visibleDays, shouldResetToToday } = this.state;
 
     const dayPickerComponent = (
       <DayPicker
@@ -658,6 +688,7 @@ export default class DayPickerSingleDateController extends React.Component {
         isYearsEnabled={isYearsEnabled}
         showKeyboardShortcuts={showKeyboardShortcuts}
         weekDayFormat={weekDayFormat}
+        shouldResetToToday={() => shouldResetToToday}
       />
     );
 

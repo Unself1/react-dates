@@ -64,6 +64,7 @@ const propTypes = forbidExtraProps({
   onPrevYearClick: PropTypes.func,
   onNextYearClick: PropTypes.func,
   onMultiplyScrollableMonths: PropTypes.func, // VERTICAL_SCROLLABLE daypickers only
+  shouldResetToToday: PropTypes.func,
 
   // month props
   renderMonth: PropTypes.func,
@@ -111,6 +112,7 @@ export const defaultProps = {
   onPrevYearClick() {},
   onNextYearClick() {},
   onMultiplyScrollableMonths() {},
+  shouldResetToToday() { return false; },
 
   // month props
   renderMonth: null,
@@ -222,6 +224,7 @@ export default class DayPicker extends React.Component {
     this.onNextMonthClick = this.onNextMonthClick.bind(this);
     this.onPrevYearClick = this.onPrevYearClick.bind(this);
     this.onNextYearClick = this.onNextYearClick.bind(this);
+    this.returnToToday = this.returnToToday.bind(this);
     this.setCalendarMonthGridRef = this.setCalendarMonthGridRef.bind(this);
     this.multiplyScrollableMonths = this.multiplyScrollableMonths.bind(this);
     this.updateStateAfterMonthTransition = this.updateStateAfterMonthTransition.bind(this);
@@ -243,8 +246,12 @@ export default class DayPicker extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const { hidden, isFocused, showKeyboardShortcuts, onBlur } = nextProps;
+    const { hidden, isFocused, showKeyboardShortcuts, onBlur, shouldResetToToday } = nextProps;
     const { currentMonth } = this.state;
+
+    if (shouldResetToToday()) {
+      this.returnToToday();
+    }
 
     if (!hidden) {
       if (!this.hasSetInitialVisibleMonth) {
@@ -295,6 +302,7 @@ export default class DayPicker extends React.Component {
   componentDidUpdate(prevProps, prevState) {
     const { numberOfMonths } = this.props;
     const { monthTransition, currentMonth, focusedDate } = this.state;
+
     if (
       monthTransition ||
       !currentMonth.isSame(prevState.currentMonth) ||
@@ -517,6 +525,18 @@ export default class DayPicker extends React.Component {
 
   setTransitionContainerRef(ref) {
     this.transitionContainer = ref;
+  }
+
+  returnToToday() {
+    const translationValue = 0;
+    const newCurrentMonth = moment();
+
+    this.setState({
+      translationValue,
+      focusedDate: null,
+      currentMonth: newCurrentMonth,
+      nextFocusedDate: null,
+    });
   }
 
   maybeTransitionNextMonth(newFocusedDate) {

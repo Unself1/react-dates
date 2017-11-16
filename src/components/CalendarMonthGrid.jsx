@@ -121,6 +121,7 @@ export default class CalendarMonthGrid extends React.Component {
     const hasMonthChanged = !this.props.initialMonth.isSame(initialMonth, 'month');
     const hasYearChanged = this.props.initialMonth.clone().add(1, 'year').isSame(initialMonth) || this.props.initialMonth.clone().subtract(1, 'year').isSame(initialMonth);
     const hasNumberOfMonthsChanged = this.props.numberOfMonths !== numberOfMonths;
+    const hasResetToToday = nextProps.initialMonth.isSame(moment(), 'month');
     let newMonths = months;
 
     if (hasYearChanged) {
@@ -139,7 +140,7 @@ export default class CalendarMonthGrid extends React.Component {
       }
     }
 
-    if (hasNumberOfMonthsChanged) {
+    if (hasNumberOfMonthsChanged || hasResetToToday) {
       const withoutTransitionMonths = orientation === VERTICAL_SCROLLABLE;
       newMonths = getMonths(initialMonth, numberOfMonths, withoutTransitionMonths);
     }
