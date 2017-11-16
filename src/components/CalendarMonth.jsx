@@ -80,7 +80,6 @@ export default class CalendarMonth extends React.Component {
 
       return (
         <div
-          id="CalendarMonth__caption"
           className="CalendarMonth__caption js-CalendarMonth__caption"
         >
           <strong className="CalendarMonth__caption__month">{monthParts[0]}</strong>
@@ -91,7 +90,6 @@ export default class CalendarMonth extends React.Component {
 
     return (
       <div
-        id="CalendarMonth__caption"
         className="CalendarMonth__caption js-CalendarMonth__caption"
       >
         <strong>{monthTitle}</strong>
