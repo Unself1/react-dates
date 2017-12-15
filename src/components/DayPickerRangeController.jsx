@@ -5,6 +5,7 @@ import { forbidExtraProps, nonNegativeInteger } from 'airbnb-prop-types';
 import moment from 'moment';
 import values from 'object.values';
 import isTouchDevice from 'is-touch-device';
+import { isEqual } from 'lodash'
 
 import { DayPickerPhrases } from '../defaultPhrases';
 import getPhrasePropTypes from '../utils/getPhrasePropTypes';
@@ -199,6 +200,7 @@ export default class DayPickerRangeController extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    if (isEqual(nextProps, this.props)) { return; }
     const {
       startDate,
       endDate,

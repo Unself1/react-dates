@@ -11,7 +11,7 @@ import DayPickerRangeController from '../src/components/DayPickerRangeController
 import ScrollableOrientationShape from '../src/shapes/ScrollableOrientationShape';
 
 import { START_DATE, END_DATE, HORIZONTAL_ORIENTATION } from '../constants';
-import isInclusivelyAfterDay from '../src/utils/isInclusivelyAfterDay';
+import isInclusivelyBeforeDay from '../src/utils/isInclusivelyBeforeDay';
 
 const propTypes = forbidExtraProps({
   // example props for the demo
@@ -60,7 +60,7 @@ const defaultProps = {
   renderDay: null,
   minimumNights: 1,
   isDayBlocked: () => false,
-  isOutsideRange: day => !isInclusivelyAfterDay(day, moment()),
+  isOutsideRange: day => !isInclusivelyBeforeDay(day, moment()),
   isDayHighlighted: () => false,
   enableOutsideDays: false,
 
