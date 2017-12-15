@@ -119,14 +119,17 @@ export default class CalendarDay extends React.Component {
     };
 
     return (
-      <td className={className} style={daySizeStyles}>
+      <td
+        className={className}
+        style={daySizeStyles}
+        onMouseEnter={(e) => { this.onDayMouseEnter(day, e); }}
+        onMouseLeave={(e) => { this.onDayMouseLeave(day, e); }}
+      >
         <button
           type="button"
           ref={this.setButtonRef}
           className="CalendarDay__button"
           aria-label={ariaLabel}
-          onMouseEnter={(e) => { this.onDayMouseEnter(day, e); }}
-          onMouseLeave={(e) => { this.onDayMouseLeave(day, e); }}
           onMouseUp={(e) => { e.currentTarget.blur(); }}
           onClick={(e) => { this.onDayClick(day, e); }}
           tabIndex={tabIndex}
