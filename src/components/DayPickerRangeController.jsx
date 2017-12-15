@@ -65,6 +65,8 @@ const propTypes = forbidExtraProps({
 
   onPrevMonthClick: PropTypes.func,
   onNextMonthClick: PropTypes.func,
+  onPrevYearClick: PropTypes.func,
+  onNextYearClick: PropTypes.func,
   onOutsideClick: PropTypes.func,
   renderDay: PropTypes.func,
   renderCalendarInfo: PropTypes.func,
@@ -81,6 +83,7 @@ const propTypes = forbidExtraProps({
   phrases: PropTypes.shape(getPhrasePropTypes(DayPickerPhrases)),
 
   isRTL: PropTypes.bool,
+  isYearsEnabled: PropTypes.bool,
 });
 
 const defaultProps = {
@@ -113,6 +116,8 @@ const defaultProps = {
 
   onPrevMonthClick() {},
   onNextMonthClick() {},
+  onPrevYearClick() {},
+  onNextYearClick() {},
   onOutsideClick() {},
 
   renderDay: null,
@@ -130,6 +135,7 @@ const defaultProps = {
   phrases: DayPickerPhrases,
 
   isRTL: false,
+  isYearsEnabled: false,
 };
 
 const getChooseAvailableDatePhrase = (phrases, focusedInput) => {
@@ -185,6 +191,8 @@ export default class DayPickerRangeController extends React.Component {
     this.onDayMouseLeave = this.onDayMouseLeave.bind(this);
     this.onPrevMonthClick = this.onPrevMonthClick.bind(this);
     this.onNextMonthClick = this.onNextMonthClick.bind(this);
+    this.onPrevYearClick = this.onPrevYearClick.bind(this);
+    this.onNextYearClick = this.onNextYearClick.bind(this);
     this.onMultiplyScrollableMonths = this.onMultiplyScrollableMonths.bind(this);
     this.getFirstFocusableDay = this.getFirstFocusableDay.bind(this);
     this.setDayPickerRef = this.setDayPickerRef.bind(this);
@@ -556,6 +564,52 @@ export default class DayPickerRangeController extends React.Component {
     onNextMonthClick(newCurrentMonth.clone());
   }
 
+  onPrevYearClick() {
+    const { onPrevYearClick, enableOutsideDays } = this.props;
+    const { currentMonth } = this.state;
+
+    const prevYearCurrentMonth = currentMonth.clone().subtract(1, 'year');
+    const prevYearPrevMonth = currentMonth.clone().subtract(11, 'month');
+    const prevYearNextMonth = currentMonth.clone().subtract(13, 'month');
+    const prevYearCurrentMonthVisibleDays = getVisibleDays(prevYearCurrentMonth, 1, enableOutsideDays, true);
+    const prevYearPrevMonthVisibleDays = getVisibleDays(prevYearPrevMonth, 1, enableOutsideDays, true);
+    const prevYearNextMonthVisibleDays = getVisibleDays(prevYearNextMonth, 1, enableOutsideDays, true);
+
+    this.setState({
+      currentMonth: prevYearCurrentMonth,
+      visibleDays: {
+        ...this.getModifiers(prevYearPrevMonthVisibleDays),
+        ...this.getModifiers(prevYearCurrentMonthVisibleDays),
+        ...this.getModifiers(prevYearNextMonthVisibleDays),
+      },
+    });
+
+    onPrevYearClick(prevYearCurrentMonth.clone());
+  }
+
+  onNextYearClick() {
+    const { onNextYearClick, numberOfMonths, enableOutsideDays } = this.props;
+    const { currentMonth } = this.state;
+
+    const nextYearCurrentMonth = currentMonth.clone().add(1, 'year');
+    const nextYearPrevMonth = currentMonth.clone().add(11, 'month');
+    const nextYearNextMonth = currentMonth.clone().add(13, 'month');
+    const nextYearCurrentMonthVisibleDays = getVisibleDays(nextYearCurrentMonth, 1, enableOutsideDays, true);
+    const nextYearPrevMonthVisibleDays = getVisibleDays(nextYearPrevMonth, 1, enableOutsideDays, true);
+    const nextYearNextMonthVisibleDays = getVisibleDays(nextYearNextMonth, 1, enableOutsideDays, true);
+
+    this.setState({
+      currentMonth: nextYearCurrentMonth,
+      visibleDays: {
+        ...this.getModifiers(nextYearPrevMonthVisibleDays),
+        ...this.getModifiers(nextYearCurrentMonthVisibleDays),
+        ...this.getModifiers(nextYearNextMonthVisibleDays),
+      },
+    });
+
+    onNextYearClick(nextYearCurrentMonth.clone());
+  }
+
   onMultiplyScrollableMonths() {
     const { numberOfMonths, enableOutsideDays } = this.props;
     const { currentMonth, visibleDays } = this.state;
@@ -854,6 +908,7 @@ export default class DayPickerRangeController extends React.Component {
       isFocused,
       showKeyboardShortcuts,
       isRTL,
+      isYearsEnabled,
       weekDayFormat,
     } = this.props;
 
@@ -871,6 +926,8 @@ export default class DayPickerRangeController extends React.Component {
         onDayMouseLeave={this.onDayMouseLeave}
         onPrevMonthClick={this.onPrevMonthClick}
         onNextMonthClick={this.onNextMonthClick}
+        onPrevYearClick={this.onPrevYearClick}
+        onNextYearClick={this.onNextYearClick}
         onMultiplyScrollableMonths={this.onMultiplyScrollableMonths}
         monthFormat={monthFormat}
         renderMonth={renderMonth}
@@ -891,6 +948,7 @@ export default class DayPickerRangeController extends React.Component {
         showKeyboardShortcuts={showKeyboardShortcuts}
         phrases={phrases}
         isRTL={isRTL}
+        isYearsEnabled={isYearsEnabled}
         weekDayFormat={weekDayFormat}
       />
     );

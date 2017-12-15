@@ -237,7 +237,7 @@ storiesOf('DayPickerSingleDateController', module)
       )}
     />
   ))
-  .addWithInfo('with year navigation with a single month', () => (
+  .addWithInfo('with year navigation', () => (
     <DayPickerSingleDateControllerWrapper
       onOutsideClick={action('DayPickerSingleDateController::onOutsideClick')}
       onPrevMonthClick={action('DayPickerSingleDateController::onPrevMonthClick')}

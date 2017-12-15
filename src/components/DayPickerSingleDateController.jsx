@@ -424,7 +424,6 @@ export default class DayPickerSingleDateController extends React.Component {
     const prevYear = currentMonth.clone().subtract(1, 'year');
     const prevYearVisibleDays = getVisibleDays(prevYear, 1, enableOutsideDays);
 
-
     this.setState({
       currentMonth: prevYear,
       visibleDays: {

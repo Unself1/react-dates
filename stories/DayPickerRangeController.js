@@ -256,4 +256,18 @@ storiesOf('DayPickerRangeController', module)
         <TestCustomInfoPanel />
       )}
     />
+  ))
+  .addWithInfo('with year navigation', () => (
+    <DayPickerRangeControllerWrapper
+      onOutsideClick={action('DayPickerRangeController::onOutsideClick')}
+      onPrevMonthClick={action('DayPickerRangeController::onPrevMonthClick')}
+      onNextMonthClick={action('DayPickerRangeController::onNextMonthClick')}
+      onPrevYearClick={action('DayPickerSingleDateController::onPrevYearClick')}
+      onNextYearClick={action('DayPickerSingleDateController::onNextYearClick')}
+      numberOfMonths={1}
+      isYearsEnabled
+      renderCalendarInfo={() => (
+        <TestCustomInfoPanel />
+      )}
+    />
   ));
